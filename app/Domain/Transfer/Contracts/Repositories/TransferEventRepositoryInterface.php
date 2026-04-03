@@ -1,6 +1,10 @@
 <?php
 
-namespace App\Domain\Transfer;
+namespace App\Domain\Transfer\Contracts\Repositories;
+
+use App\Domain\Transfer\DTOs\StationSummary;
+use App\Domain\Transfer\DTOs\TransferEventCollection;
+use App\Domain\Transfer\DTOs\TransferResult;
 
 interface TransferEventRepositoryInterface
 {

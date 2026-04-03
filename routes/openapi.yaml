@@ -1,0 +1,160 @@
+openapi: 3.0.3
+info:
+  title: Station Transfer Events API
+  description: API for ingesting station transfer events and retrieving reconciliation summaries.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8000/api
+    description: Local development
+
+paths:
+  /transfers:
+    post:
+      summary: Ingest transfer events
+      description: |
+        Accepts a batch of transfer events. Idempotent by event_id — duplicate
+        events are silently skipped. Concurrency-safe via database unique constraint.
+        Uses fail-fast strategy: rejects the entire batch if any event is invalid.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngestRequest'
+            example:
+              events:
+                - event_id: "E1"
+                  station_id: "S1"
+                  amount: 100.50
+                  status: "approved"
+                  created_at: "2026-02-19T10:00:00Z"
+                - event_id: "E2"
+                  station_id: "S1"
+                  amount: 200.00
+                  status: "pending"
+                  created_at: "2026-02-19T11:00:00Z"
+      responses:
+        '201':
+          description: Events processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestResponse'
+              example:
+                inserted: 2
+                duplicates: 0
+        '422':
+          description: Validation error — entire batch rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                message: "Each event must have an event_id."
+                errors:
+                  events.0.event_id:
+                    - "Each event must have an event_id."
+
+  /stations/{stationId}/summary:
+    get:
+      summary: Get station reconciliation summary
+      description: |
+        Returns the reconciliation summary for a station. total_approved_amount
+        sums only events with status "approved". events_count includes all
+        statuses. Returns zero values for stations with no events.
+      parameters:
+        - name: stationId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "S1"
+      responses:
+        '200':
+          description: Station summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StationSummary'
+              example:
+                station_id: "S1"
+                total_approved_amount: 450.25
+                events_count: 12
+
+components:
+  schemas:
+    TransferEvent:
+      type: object
+      required:
+        - event_id
+        - station_id
+        - amount
+        - status
+        - created_at
+      properties:
+        event_id:
+          type: string
+          description: Globally unique event identifier
+        station_id:
+          type: string
+          description: Station identifier
+        amount:
+          type: number
+          format: double
+          minimum: 0
+          description: Transfer amount (non-negative)
+        status:
+          type: string
+          description: Event status. Only "approved" counts toward totals. Unknown statuses are accepted.
+        created_at:
+          type: string
+          format: date-time
+          description: ISO8601 datetime (e.g. 2026-02-19T10:00:00Z)
+
+    IngestRequest:
+      type: object
+      required:
+        - events
+      properties:
+        events:
+          type: array
+          minItems: 1
+          maxItems: 1000
+          items:
+            $ref: '#/components/schemas/TransferEvent'
+
+    IngestResponse:
+      type: object
+      properties:
+        inserted:
+          type: integer
+          description: Number of newly inserted events
+        duplicates:
+          type: integer
+          description: Number of events skipped (already existed)
+
+    StationSummary:
+      type: object
+      properties:
+        station_id:
+          type: string
+        total_approved_amount:
+          type: number
+          format: double
+          description: Sum of amounts for approved events only
+        events_count:
+          type: integer
+          description: Total number of events for this station (all statuses)
+
+    ValidationError:
+      type: object
+      properties:
+        message:
+          type: string
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string

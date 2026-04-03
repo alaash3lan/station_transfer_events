@@ -2,9 +2,9 @@
 
 namespace App\Application\Transfer;
 
-use App\Domain\Transfer\TransferEventCollection;
-use App\Domain\Transfer\TransferEventRepositoryInterface;
-use App\Domain\Transfer\TransferResult;
+use App\Domain\Transfer\Contracts\Repositories\TransferEventRepositoryInterface;
+use App\Domain\Transfer\DTOs\TransferEventCollection;
+use App\Domain\Transfer\DTOs\TransferResult;
 use Illuminate\Support\Facades\Log;
 
 class IngestTransferEventsAction
@@ -16,7 +16,6 @@ class IngestTransferEventsAction
     public function execute(TransferEventCollection $events): TransferResult
     {
         Log::info('Ingesting transfer events batch', ['count' => $events->count()]);
-
         $result = $this->repository->insertBatch($events);
 
         Log::info('Transfer events ingested', [

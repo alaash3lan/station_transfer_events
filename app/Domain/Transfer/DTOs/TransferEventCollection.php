@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Transfer;
+namespace App\Domain\Transfer\DTOs;
 
 final readonly class TransferEventCollection
 {

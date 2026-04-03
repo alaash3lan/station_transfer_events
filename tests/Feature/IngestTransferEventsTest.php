@@ -39,14 +39,16 @@ class IngestTransferEventsTest extends TestCase
         $this->assertDatabaseCount('transfer_events', 3);
     }
 
-    public function test_duplicate_events_are_not_inserted_twice(): void
+    public function test_duplicate_events_are_not_inserted_and_totals_unchanged(): void
     {
         $events = [
-            $this->makeEvent(['event_id' => 'E1']),
-            $this->makeEvent(['event_id' => 'E2']),
+            $this->makeEvent(['event_id' => 'E1', 'amount' => 100.00, 'status' => 'approved']),
+            $this->makeEvent(['event_id' => 'E2', 'amount' => 200.00, 'status' => 'approved']),
         ];
 
         $this->postJson('/api/transfers', ['events' => $events]);
+
+        $summaryBefore = $this->getJson('/api/stations/S1/summary')->json();
 
         $response = $this->postJson('/api/transfers', ['events' => $events]);
 
@@ -57,6 +59,9 @@ class IngestTransferEventsTest extends TestCase
             ]);
 
         $this->assertDatabaseCount('transfer_events', 2);
+
+        $summaryAfter = $this->getJson('/api/stations/S1/summary')->json();
+        $this->assertEquals($summaryBefore, $summaryAfter);
     }
 
     public function test_mixed_new_and_duplicate_events_returns_correct_split(): void

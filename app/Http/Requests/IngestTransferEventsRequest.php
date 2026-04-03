@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Domain\Transfer\TransferEvent;
-use App\Domain\Transfer\TransferEventCollection;
+use App\Domain\Transfer\DTOs\TransferEvent;
+use App\Domain\Transfer\DTOs\TransferEventCollection;
 use Illuminate\Foundation\Http\FormRequest;
 
 class IngestTransferEventsRequest extends FormRequest

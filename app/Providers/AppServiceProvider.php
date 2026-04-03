@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Domain\Transfer\TransferEventRepositoryInterface;
+use App\Domain\Transfer\Contracts\Repositories\TransferEventRepositoryInterface;
 use App\Infrastructure\Transfer\SqliteTransferEventRepository;
 use Illuminate\Support\ServiceProvider;
 

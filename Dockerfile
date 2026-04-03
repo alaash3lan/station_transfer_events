@@ -38,7 +38,9 @@ COPY --from=deps /var/www/html /var/www/html
 RUN touch database/database.sqlite \
     && chown -R www-data:www-data storage bootstrap/cache database
 
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 EXPOSE 8000
 
-# Entrypoint script to handle migrations and start the server
-ENTRYPOINT ["sh", "-c", "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8000"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

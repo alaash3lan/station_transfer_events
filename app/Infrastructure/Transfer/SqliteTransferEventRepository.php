@@ -2,10 +2,10 @@
 
 namespace App\Infrastructure\Transfer;
 
-use App\Domain\Transfer\StationSummary;
-use App\Domain\Transfer\TransferEventCollection;
-use App\Domain\Transfer\TransferEventRepositoryInterface;
-use App\Domain\Transfer\TransferResult;
+use App\Domain\Transfer\Contracts\Repositories\TransferEventRepositoryInterface;
+use App\Domain\Transfer\DTOs\StationSummary;
+use App\Domain\Transfer\DTOs\TransferEventCollection;
+use App\Domain\Transfer\DTOs\TransferResult;
 use Illuminate\Support\Facades\DB;
 
 class SqliteTransferEventRepository implements TransferEventRepositoryInterface

@@ -2,8 +2,8 @@
 
 namespace App\Application\Transfer;
 
-use App\Domain\Transfer\StationSummary;
-use App\Domain\Transfer\TransferEventRepositoryInterface;
+use App\Domain\Transfer\Contracts\Repositories\TransferEventRepositoryInterface;
+use App\Domain\Transfer\DTOs\StationSummary;
 use Illuminate\Support\Facades\Log;
 
 class GetStationSummaryAction
