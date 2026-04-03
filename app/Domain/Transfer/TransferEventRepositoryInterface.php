@@ -4,10 +4,10 @@ namespace App\Domain\Transfer;
 
 interface TransferEventRepositoryInterface
 {
-    /**
-     * @param TransferEvent[] $events
-     */
-    public function insertBatch(array $events): TransferResult;
+    public function insertBatch(TransferEventCollection $events): TransferResult;
 
+    /**
+     * Returns a zero-value summary if the station has no events.
+     */
     public function getStationSummary(string $stationId): StationSummary;
 }
