@@ -37,7 +37,7 @@ class IngestTransferEventsRequest extends FormRequest
             fn(array $event) => new TransferEvent(
                 event_id: $event['event_id'],
                 station_id: $event['station_id'],
-                amount: (string) $event['amount'],
+                amount: (float) $event['amount'],
                 status: $event['status'],
                 created_at: $event['created_at'],
             ),
