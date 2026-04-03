@@ -50,7 +50,7 @@ class SqliteTransferEventRepository implements TransferEventRepositoryInterface
 
         return new StationSummary(
             station_id: $stationId,
-            total_approved_amount: number_format((float) $result->total_approved_amount, 2, '.', ''),
+            total_approved_amount: round((float) $result->total_approved_amount, 2),
             events_count: (int) $result->events_count,
         );
     }
